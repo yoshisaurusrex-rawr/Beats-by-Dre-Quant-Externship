@@ -1,0 +1,472 @@
+import React, { useState } from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Tooltip, Legend } from 'recharts';
+import { TrendingUp, TrendingDown, Users, Star, MessageSquare, Target, Lightbulb, AlertTriangle, Award, DollarSign, Headphones, Volume2, Zap, Wifi } from 'lucide-react';
+
+const ExecutiveDashboard = () => {
+  const [activeSection, setActiveSection] = useState('sentiment');
+
+  // Sample data structure - replace with your actual analysis
+  const overallMetrics = {
+    avgRating: 4.59,
+    totalReviews: 4758,
+    sentimentPolarity: 0.30,
+    sentimentSubjectivity: 0.55,
+    marketPosition: '#1',
+    growthRate: 2
+  };
+
+  const reviewVolumeData = [
+    { month: 'Sep', volume: 2, sentiment: 0.62 },
+    { month: 'Oct', volume: 3, sentiment: 0.65 },
+    { month: 'Nov', volume: 1, sentiment: 0.58 },
+    { month: 'Dec', volume: 2, sentiment: 0.68 },
+    { month: 'Jan', volume: 3, sentiment: 0.70 },
+    { month: 'Feb', volume: 6, sentiment: 0.67 },
+    { month: 'Mar', volume: 10, sentiment: 0.69 },
+    { month: 'Apr', volume: 15, sentiment: 0.71 }
+  ];
+
+  const ratingDistribution = [
+    { rating: '5★', count: 6890, percentage: 43.5, color: '#dc2626' },
+    { rating: '4★', count: 4760, percentage: 30.0, color: '#ea580c' },
+    { rating: '3★', count: 2220, percentage: 14.0, color: '#d97706' },
+    { rating: '2★', count: 1270, percentage: 8.0, color: '#ca8a04' },
+    { rating: '1★', count: 707, percentage: 4.5, color: '#65a30d' }
+  ];
+
+  const keyThemes = [
+    { theme: 'Sound Quality', sentiment: 0.78, mentions: 8900, impact: 'High' },
+    { theme: 'Battery Life', sentiment: 0.45, mentions: 7600, impact: 'Critical' },
+    { theme: 'Build Quality', sentiment: 0.82, mentions: 6400, impact: 'High' },
+    { theme: 'Price/Value', sentiment: 0.38, mentions: 9200, impact: 'Critical' },
+    { theme: 'Comfort', sentiment: 0.71, mentions: 5700, impact: 'Medium' },
+    { theme: 'Brand Status', sentiment: 0.85, mentions: 4800, impact: 'High' }
+  ];
+
+  const importantFeatures = [
+    { feature: 'Active Noise Cancellation', importance: 94, mentions: 12450, sentiment: 0.72, icon: '🎧' },
+    { feature: 'Battery Life', importance: 92, mentions: 11800, sentiment: 0.45, icon: '🔋' },
+    { feature: 'Sound Quality', importance: 89, mentions: 14200, sentiment: 0.78, icon: '🎵' },
+    { feature: 'Wireless Connectivity', importance: 87, mentions: 9600, sentiment: 0.68, icon: '📶' },
+    { feature: 'Comfort/Fit', importance: 83, mentions: 8900, sentiment: 0.71, icon: '👂' },
+    { feature: 'Build Quality/Durability', importance: 81, mentions: 7800, sentiment: 0.82, icon: '💪' },
+    { feature: 'Quick Charging', importance: 76, mentions: 6200, sentiment: 0.64, icon: '⚡' },
+    { feature: 'Voice Assistant Integration', importance: 68, mentions: 4500, sentiment: 0.59, icon: '🎤' }
+  ];
+
+  const brandRecognition = [
+    { brand: 'Bose', avgRating: 4.11, totalReviews: 294, marketPresence: 'High' },
+    { brand: 'Sony', avgRating: 4.17, totalReviews: 1471, marketPresence: 'Very High' },
+    { brand: 'Apple', avgRating: 4.37, totalReviews: 190, marketPresence: 'Low' },
+    { brand: 'Beats', avgRating: 4.59, totalReviews: 278, marketPresence: 'High' },
+    { brand: 'Sennheiser', avgRating: 4.1, totalReviews: 100, marketPresence: 'Low' },
+    { brand: 'JBL', avgRating: 4.5, totalReviews: 957, marketPresence: 'Very High' },
+    { brand: 'Skullcandy', avgRating: 4.67, totalReviews: 105, marketPresence: 'Low' }
+  ];
+
+  const competitorInsights = [
+    { brand: 'Sony WH-1000XM5', rating: 4.4, price: '$399', strength: 'Noise Cancellation' },
+    { brand: 'Beats Studio Pro', rating: 4.2, price: '$349', strength: 'Brand Appeal' },
+    { brand: 'Bose QuietComfort', rating: 4.5, price: '$429', strength: 'Comfort' },
+    { brand: 'Apple AirPods Max', rating: 4.3, price: '$549', strength: 'Ecosystem' }
+  ];
+
+  const MetricCard = ({ title, value, subtitle, icon: Icon, trend }) => (
+    <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-red-600">
+      <div className="flex items-center justify-between mb-4">
+        <div className="p-3 rounded-lg bg-gradient-to-br from-red-50 to-red-100">
+          <Icon className="w-6 h-6 text-red-600" />
+        </div>
+        {trend && (
+          <div className={`flex items-center ${trend === 'up' ? 'text-red-600' : 'text-gray-500'}`}>
+            {trend === 'up' ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+          </div>
+        )}
+      </div>
+      <h3 className="text-2xl font-bold text-gray-900 mb-1">{value}</h3>
+      <p className="text-sm text-gray-600 mb-2">{title}</p>
+      {subtitle && <p className="text-xs text-gray-500">{subtitle}</p>}
+    </div>
+  );
+
+  const ChartSection = ({ title, children, caption, synthesis }) => (
+    <div className="bg-white rounded-xl p-8 shadow-lg border-l-4 border-red-600 mb-8">
+      <h3 className="text-xl font-semibold text-gray-900 mb-6">{title}</h3>
+      <div className="mb-6">
+        {children}
+      </div>
+      <div className="border-t border-gray-100 pt-6">
+        <p className="text-sm text-gray-600 mb-4 italic">{caption}</p>
+        <div className="bg-red-50 rounded-lg p-4">
+          <div className="flex items-start">
+            <Headphones className="w-5 h-5 text-red-600 mt-0.5 mr-3 flex-shrink-0" />
+            <div>
+              <h4 className="font-medium text-red-900 mb-1">Key Synthesis</h4>
+              <p className="text-sm text-red-800">{synthesis}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const sections = [
+    { id: 'sentiment', label: 'Consumer Sentiment', icon: MessageSquare },
+    { id: 'volume', label: 'Review Trends', icon: TrendingUp },
+    { id: 'brands', label: 'Brand Recognition', icon: Award },
+    { id: 'themes', label: 'Key Themes', icon: Volume2 },
+    { id: 'recommendations', label: 'Recommendations', icon: Lightbulb }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-black via-gray-900 to-red-900 shadow-xl">
+        <div className="max-w-7xl mx-auto px-6 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <Headphones className="w-10 h-10 text-red-500 mr-4" />
+              <div>
+                <h1 className="text-3xl font-bold text-white">Beats by Dre</h1>
+                <p className="text-sm text-gray-300">Market Analysis Dashboard • Audio Products Competitive Intelligence</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-sm text-gray-300">Analysis Period: Jan - Aug 2024</p>
+              <p className="text-xs text-gray-400">Data Source: Amazon Reviews (N=4,758)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Key Metrics Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <MetricCard 
+            title="Average Rating" 
+            value="4.6★" 
+            subtitle="vs 4.3★ industry avg"
+            icon={Volume2} 
+            trend="up"
+          />
+          <MetricCard 
+            title="Total Reviews Analyzed" 
+            value="4,758" 
+            icon={Users} 
+            trend="up"
+          />
+          <MetricCard 
+            title="Sentiment Score" 
+            value="0.30" 
+            subtitle="Positive sentiment trend"
+            icon={TrendingUp} 
+            trend="up"
+          />
+          <MetricCard 
+            title="Market Position" 
+            value="#4" 
+            subtitle="in premium audio category"
+            icon={Award}
+          />
+        </div>
+
+        {/* Navigation */}
+        <div className="bg-white rounded-xl shadow-lg border-l-4 border-red-600 mb-8">
+          <div className="flex overflow-x-auto">
+            {sections.map((section) => {
+              const Icon = section.icon;
+              return (
+                <button
+                  key={section.id}
+                  onClick={() => setActiveSection(section.id)}
+                  className={`flex-shrink-0 flex items-center px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
+                    activeSection === section.id
+                      ? 'border-red-500 text-red-600 bg-red-50'
+                      : 'border-transparent text-gray-500 hover:text-red-600 hover:bg-red-50'
+                  }`}
+                >
+                  <Icon className="w-4 h-4 mr-2" />
+                  {section.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Content Sections */}
+        {activeSection === 'sentiment' && (
+          <ChartSection
+            title="Overall Consumer Sentiment Analysis"
+            caption="Sentiment analysis based on 4,758 Amazon reviews using natural language processing. Polarity ranges from -1 (negative) to +1 (positive), while subjectivity measures opinion vs fact (0-1)."
+            synthesis="Beats maintains consistent positive sentiment (0.30 polarity) with high consumer engagement (0.55 subjectivity). This indicates passionate brand loyalty but also suggests polarized opinions that require strategic attention to pain points."
+          >
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div>
+                <ResponsiveContainer width="100%" height={300}>
+                  <RadarChart data={[
+                    { subject: 'Sound Quality', score: 0.78 },
+                    { subject: 'Build Quality', score: 0.82 },
+                    { subject: 'Comfort', score: 0.71 },
+                    { subject: 'Battery Life', score: 0.45 },
+                    { subject: 'Price/Value', score: 0.38 },
+                    { subject: 'Brand Appeal', score: 0.85 }
+                  ]}>
+                    <PolarGrid />
+                    <PolarAngleAxis dataKey="subject" />
+                    <PolarRadiusAxis domain={[0, 1]} />
+                    <Radar name="Sentiment Score" dataKey="score" stroke="#dc2626" fill="#dc2626" fillOpacity={0.3} />
+                  </RadarChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="space-y-4">
+                <div className="bg-red-50 rounded-lg p-4 border-l-4 border-red-500">
+                  <div className="flex items-center mb-2">
+                    <Volume2 className="w-4 h-4 text-red-600 mr-2" />
+                    <h4 className="font-semibold text-red-900">Strengths</h4>
+                  </div>
+                  <ul className="text-sm text-red-800 space-y-1">
+                    <li>• Brand Appeal: Highest sentiment</li>
+                    <li>• Build Quality: Durable</li>
+                    <li>• Sound Quality: Clear sound and punchy bass</li>
+                  </ul>
+                </div>
+                <div className="bg-gray-100 rounded-lg p-4 border-l-4 border-gray-500">
+                  <div className="flex items-center mb-2">
+                    <AlertTriangle className="w-4 h-4 text-gray-600 mr-2" />
+                    <h4 className="font-semibold text-gray-900">Areas for Improvement</h4>
+                  </div>
+                  <ul className="text-sm text-gray-800 space-y-1">
+                    <li>• Fit/Comfort: Major concern </li>
+                    <li>• ANC: Underwhelming compared to competitors</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </ChartSection>
+        )}
+
+        {activeSection === 'volume' && (
+          <ChartSection
+            title="Review Volume and Sentiment Trends Over Time"
+            caption="Monthly review volume shows consumer engagement patterns, while sentiment tracking reveals brand perception evolution across the analysis period."
+            synthesis="Review volume spiked in 2024 and then immediately dropped down to more consistent levels, indicating a period of stability."
+          >
+            <ResponsiveContainer width="100%" height={400}>
+              <LineChart data={reviewVolumeData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis yAxisId="left" />
+                <YAxis yAxisId="right" orientation="right" domain={[0, 1]} />
+                <Tooltip />
+                <Legend />
+                <Bar yAxisId="left" dataKey="volume" fill="#dc2626" name="Review Volume" />
+                <Line yAxisId="right" type="monotone" dataKey="sentiment" stroke="#000000" strokeWidth={3} name="Sentiment Score" />
+              </LineChart>
+            </ResponsiveContainer>
+          </ChartSection>
+        )}
+
+        {activeSection === 'brands' && (
+          <ChartSection
+            title="Brand Recognition & Performance Comparison"
+            caption="Average ratings across major audio brands based on Amazon review analysis. Higher ratings indicate stronger consumer satisfaction and brand loyalty within the premium audio segment."
+            synthesis="Beats ranks 1st among premium brands with a 4.59★ average. While trailing Bose (4.11★) and Sony (4.17★), Beats outperforms in brand recognition and cultural relevance."
+          >
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2">
+                <ResponsiveContainer width="100%" height={400}>
+                  <BarChart data={brandRecognition} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis 
+                      dataKey="brand" 
+                      angle={-45}
+                      textAnchor="end"
+                      height={80}
+                      interval={0}
+                    />
+                    <YAxis domain={[3.5, 4.6]} />
+                    <Tooltip 
+                      formatter={(value, name, props) => [
+                        `${value}★`, 
+                        'Average Rating',
+                        `Reviews: ${props.payload.totalReviews.toLocaleString()}`
+                      ]}
+                    />
+                    <Bar 
+                      dataKey="avgRating" 
+                      name="Average Rating"
+                    >
+                      {brandRecognition.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.brand === 'Beats' ? '#dc2626' : '#6b7280'} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="bg-red-50 rounded-lg p-4 border-l-4 border-red-600">
+                  <div className="flex items-center mb-3">
+                    <Award className="w-5 h-5 text-red-600 mr-2" />
+                    <h4 className="font-semibold text-red-900">Competitive Position</h4>
+                  </div>
+                  <div className="space-y-2">
+                    {brandRecognition.slice(0, 4).map((brand, index) => (
+                      <div key={index} className={`flex items-center justify-between p-2 rounded ${brand.brand === 'Beats' ? 'bg-red-100 border border-red-200' : 'bg-white'}`}>
+                        <span className={`text-sm flex items-center ${brand.brand === 'Beats' ? 'font-bold text-red-900' : 'text-gray-700'}`}>
+                          {brand.brand === 'Beats' && <Headphones className="w-4 h-4 mr-2" />}
+                          #{index + 1} {brand.brand}
+                        </span>
+                        <span className={`text-sm font-medium ${brand.brand === 'Beats' ? 'text-red-900' : 'text-gray-600'}`}>
+                          {brand.avgRating}★
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="bg-gray-50 rounded-lg p-4 border-l-4 border-gray-500">
+                  <div className="flex items-center mb-3">
+                    <Target className="w-5 h-5 text-gray-600 mr-2" />
+                    <h4 className="font-semibold text-gray-900">Market Insights</h4>
+                  </div>
+                  <ul className="text-sm text-gray-700 space-y-1">
+                    <li>• Strong brand recognition despite rating</li>
+                    <li>• Premium segment competition intense</li>
+                    <li>• Opportunity in mid-range expansion</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </ChartSection>
+        )}
+
+        {activeSection === 'themes' && (
+          <ChartSection
+            title="Key Themes and Consumer Pain Points"
+            caption="Analysis of most frequently mentioned themes in reviews, ranked by sentiment score and business impact potential."
+            synthesis="Critical focus needed on ANC/sound quality improvements, as well as reimagine design to fit comfort needs. Leverage brand appeal and build quality as strengths in marketing."
+          >
+            <div className="space-y-4">
+              {keyThemes.map((theme, index) => (
+                <div key={index} className="flex items-center p-4 bg-gradient-to-r from-white to-red-50 rounded-lg border-l-4 border-red-600 shadow-sm">
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-semibold flex items-center">
+                        <Volume2 className="w-4 h-4 text-red-600 mr-2" />
+                        {theme.theme}
+                      </h4>
+                      <div className="flex items-center space-x-4">
+                        <span className="text-sm text-gray-600">{theme.mentions.toLocaleString()} mentions</span>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          theme.impact === 'Critical' ? 'bg-red-100 text-red-800 border border-red-300' :
+                          theme.impact === 'High' ? 'bg-orange-100 text-orange-800 border border-orange-300' :
+                          'bg-yellow-100 text-yellow-800 border border-yellow-300'
+                        }`}>
+                          {theme.impact} Impact
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="flex-1 bg-gray-200 rounded-full h-2 mr-4">
+                        <div 
+                          className={`h-2 rounded-full ${theme.sentiment > 0.6 ? 'bg-red-600' : theme.sentiment > 0.4 ? 'bg-yellow-600' : 'bg-gray-600'}`}
+                          style={{ width: `${theme.sentiment * 100}%` }}
+                        ></div>
+                      </div>
+                      <span className="font-bold text-sm">{theme.sentiment.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </ChartSection>
+        )}
+
+        {activeSection === 'recommendations' && (
+          <div className="space-y-8">
+            <div className="bg-white rounded-xl p-8 shadow-lg border-l-4 border-red-600">
+              <div className="flex items-center mb-6">
+                <Lightbulb className="w-6 h-6 text-red-600 mr-3" />
+                <h3 className="text-xl font-semibold text-gray-900">Strategic Recommendations</h3>
+              </div>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="space-y-6">
+                  <div className="border-l-4 border-red-600 pl-6">
+                    <div className="flex items-center mb-2">
+                      <AlertTriangle className="w-5 h-5 text-red-600 mr-2" />
+                      <h4 className="font-bold text-red-900">🚨 Immediate Actions</h4>
+                    </div>
+                    <ul className="space-y-2 text-sm text-gray-700">
+                      <li>• Redesign for secure fit and comfort</li>
+                      <li>• Develop quality-focused product line ($150-300 range)</li>
+                      <li>• Strengthen connectivity and Apple Ecosystem integration</li>
+                      <li>• Differentiate with adaptive sound personalization</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="border-l-4 border-orange-500 pl-6">
+                    <div className="flex items-center mb-2">
+                      <TrendingUp className="w-5 h-5 text-orange-600 mr-2" />
+                      <h4 className="font-bold text-orange-900">📈 Market Opportunities</h4>
+                    </div>
+                    <ul className="space-y-2 text-sm text-gray-700">
+                      <li>• Mid-range market expansion (competitor gap identified)</li>
+                      <li>• Enhanced comfort features (room for growth)</li>
+                      <li>• Sustainability messaging (emerging consumer priority)</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div className="space-y-6">
+                  <div className="border-l-4 border-red-500 pl-6">
+                    <div className="flex items-center mb-2">
+                      <Volume2 className="w-5 h-5 text-red-600 mr-2" />
+                      <h4 className="font-bold text-red-900">💪 Leverage Strengths</h4>
+                    </div>
+                    <ul className="space-y-2 text-sm text-gray-700">
+                      <li>• Amplify brand appeal in marketing</li>
+                      <li>• Highlight build quality differentiation</li>
+                      <li>• Expand celebrity/influencer partnerships</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="border-l-4 border-gray-600 pl-6">
+                    <div className="flex items-center mb-2">
+                      <Headphones className="w-5 h-5 text-gray-600 mr-2" />
+                      <h4 className="font-bold text-gray-900">🎯 Product Development Focus</h4>
+                    </div>
+                    <ul className="space-y-2 text-sm text-gray-700">
+                      <li>• Next-gen battery technology (primary pain point)</li>
+                      <li>• Modular pricing/features approach</li>
+                      <li>• Enhanced active noise cancellation</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-8 p-6 bg-gradient-to-r from-red-50 to-black/5 rounded-lg border-l-4 border-red-600">
+                <div className="flex items-start">
+                  <Headphones className="w-6 h-6 text-red-600 mr-3 mt-1" />
+                  <div>
+                    <h4 className="font-bold text-red-900 mb-3">💡 Recommended New Product Strategy</h4>
+                    <p className="text-red-800 mb-4">
+                      Launch "Beats Studio Value" line targeting the $150-300 price segment with 40+ hour battery life, 
+                      maintaining core sound quality and brand appeal while addressing price sensitivity concerns.
+                    </p>
+                    <div className="text-sm text-red-700">
+                      <strong>Expected Impact:</strong> 2-4% market share growth, 10-15% revenue growth, improved price/value sentiment, expanded demographic reach
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default ExecutiveDashboard;
